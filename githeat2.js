@@ -19,37 +19,36 @@ app.post('/done',function(req,res){
 var trainnumber=req.body.number;    
 var base_url = "https://erail.in/train-enquiry/"+trainnumber;
 
-function print(data)
+// A failed attempt to print. Results in untidy representation    
+/*function print(data)
 {
     var answer="";
     for(var i=0;i< data.length; i++)
     {
-        if(i==5)
-        continue;
         var route=data[i].number+"             "+data[i].station+"            "+data[i].arrival+"             "+data[i].distance+"                 "+ "\n\n";
         answer= answer+ route;
     }
     res.end(answer);
-}
+}*/
 
-var kurs = [];
+var answer = [];
 axios.get(base_url).then( (response) => {
   var $ = cheerio.load(response.data);
   
   $('tr', '.DataTable').each( (i, elm) => {
-    kurs.push( {
+    answer.push( {
       number : $(elm).children().first().text(),
       station : $(elm).children().eq(1).text(),
       arrival: $(elm).children().eq(2).first().text(),
       distance :$(elm).children().eq(3).first().text()
     });
   });
-  return(kurs);
+  return(answer);
 })
-.then ( (kurs) => {
-  console.log(kurs);
+.then ( (answer) => {
+  console.log(answer);
   app.set('view engine','ejs');
-  res.render('demo',{data : kurs});
+  res.render('demo',{data : answer});
 });
 
 });
